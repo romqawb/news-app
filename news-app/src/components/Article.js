@@ -1,8 +1,9 @@
+import React from 'react';
 import { Card, CardContent, CardMedia, CardActions, Button, Typography } from '@mui/material';
 
 const Article = (props) => {
     const { article } = props;
-    const { author, title, description, url, urlToImage } = article;
+    const { author, title, description, url, urlToImage, fake } = article;
     return (
         <Card sx={{ minHeight: 500, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <CardMedia
@@ -19,14 +20,14 @@ const Article = (props) => {
                 <Typography sx={{ wordWrap: 'break-word', textAlign: 'center' }} variant='body2' color='info'>
                     {description}
                 </Typography>
-                <Typography sx={{ mt: 1, textAlign: 'center' }} variant='subtitle2' component='div'>
+                {!fake ? <Typography sx={{ mt: 1, textAlign: 'center' }} variant='subtitle2' component='div'>
                     By: {author === null ? 'N/A' : author}
-                </Typography>
+                </Typography> : null}
             </CardContent>
-            <CardActions component='div' sx={{ p: 2, justifyContent: 'center' }}>
-                <Button sx={{ p: 1, width: '30%' }} href='#' size="small" variant='contained' color='error'>Save</Button>
-                <Button sx={{ p: 1, width: '30%' }} href={url} target='_blank' size="small" variant='contained'>Read More</Button>
-            </CardActions>
+            {!fake ? <CardActions component='div' sx={{ p: 2, justifyContent: 'center' }}>
+                <Button sx={{ p: 1, width: '30%' }} href='#' size="small" variant='contained' color='info'>Save</Button>
+                <Button sx={{ p: 1, width: '30%' }} href={url} target='_blank' size="small" variant='contained' color='warning'>Read More</Button>
+            </CardActions> : null}
         </Card>
     )
 }

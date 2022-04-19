@@ -1,27 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { v4 as uuid } from 'uuid';
-import { useState, useEffect } from 'react';
+import AppHeader from './components/AppHeader';
 import Article from './components/Article';
-import { Skeleton, Grid, Container, TextField, Box, Button } from '@mui/material';
+import { Skeleton, Grid, Container, Typography } from '@mui/material';
 import { theme } from './styles/Theme.js'
 import { ThemeProvider } from '@mui/material/styles';
 
-function App(props) {
-  const [loading, setLoading] = useState(true);
+
+
+function App() {
   const [news, setNews] = useState(JSON.parse(window.localStorage.getItem('news') || '[]'));
+  const [keyword, setKeyword] = useState(JSON.parse(window.localStorage.getItem('keyword') || JSON.stringify('random')));
   const [query, updateQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+
   let content;
-
-  const handleChange = (e) => {
-    e.preventDefault();
-    updateQuery(e.target.value);
-  }
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    getNews(query);
-  }
-
   const params = {
     headers: {
       'X-Api-Key': process.env.REACT_APP_API_KEY
@@ -29,31 +24,35 @@ function App(props) {
   }
 
   const getNews = async (queryParams) => {
-    const url = `https://newsapi.org/v2/everything?q=${queryParams}&from=2022-04-04&sortBy=popularity&language=en`;
+    const url = `https://newsapi.org/v2/everything?q=${queryParams}&language=en`;
+    console.log(url);
     let foundNews = [];
     await fetch(url, params)
       .then(data => data.json())
       .then(data => data.articles.map(article => foundNews.push(article)))
       .catch(error => error)
     setNews(foundNews);
+    setKeyword(queryParams);
     setLoading(false);
     updateQuery('');
     window.localStorage.setItem('news', JSON.stringify(foundNews));
+    window.localStorage.setItem('keyword', JSON.stringify(queryParams));
   }
 
   if (loading) {
-    const fakeNews = Array(9).fill(1);
+    const fakeNews = Array(4).fill('');
     const fakeArticle = {
-      author: <Skeleton height='200' animation='wave' />,
-      title: <Skeleton height='200' animation='wave' />,
-      description: <Skeleton variant="rectangular" width={'100%'} height={100} animation='wave' />,
-      url: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pinterest.com%2Fpin%2F80853755789865527%2F&psig=AOvVaw18XVm-En0IEPPaIrI55JTf&ust=1649261505580000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCICG0oSo_fYCFQAAAAAdAAAAABAJ',
-      urlToImage: 'https://cdn.impression.co.uk/2021/03/loading1.gif'
+      author: <Skeleton height={50} width={'100%'} animation='wave' />,
+      title: <Skeleton height={50} animation='wave' />,
+      description: <Skeleton height={150} animation='wave' />,
+      url: '',
+      urlToImage: 'https://miro.medium.com/max/1080/0*DqHGYPBA-ANwsma2.gif',
+      fake: true
     }
     content = (
       fakeNews.map(item => {
         return (
-          <Grid key={uuid()} item lg={4} md={6} xs={12} >
+          <Grid key={uuid()} item lg={4} md={6} sm={12} >
             <Article article={fakeArticle} />
           </Grid>
         )
@@ -63,7 +62,7 @@ function App(props) {
     content = (
       news.map((article) => {
         return (
-          <Grid key={uuid()} item lg={4} md={6} xs={12} >
+          <Grid key={uuid()} item lg={4} md={6} sm={12}>
             <Article article={article} />
           </Grid>)
       })
@@ -82,16 +81,21 @@ function App(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container sx={{ p: 2 }}>
-        <Box component='div' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', px: 3 }}>
-          <TextField label='Search' variant='outlined' color='warning' sx={{ mx: 2 }} value={query} onChange={handleChange} />
-          <Button variant='contained' color='warning' onClick={handleClick}>Get News</Button>
-        </Box>
-        <Grid container spacing='24' sx={{ my: 2 }}>
+      <Container sx={{ p: 3 }}>
+        <AppHeader
+          updateQuery={updateQuery}
+          getNews={getNews}
+          query={query}
+          setCategories={setCategories}
+        />
+        <Typography variant='h3' sx={{ my: 2, p: 1, textAlign: 'center' }}>
+          {`All news found for keyword '${keyword}'`}
+        </Typography>
+        <Grid container spacing={5}>
           {content}
         </Grid>
       </Container>
-    </ThemeProvider >
+    </ThemeProvider>
   );
 }
 

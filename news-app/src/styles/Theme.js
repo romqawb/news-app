@@ -5,6 +5,7 @@ export const theme = createTheme({
         MuiAppBar: {
             styleOverrides: {
                 root: {
+                    borderRadius: '10px',
                     backgroundColor: 'rgba(63,66,68,0.6)',
                     transition: 'all 0.2s ease-in-out',
                     '&:hover': {
@@ -17,7 +18,6 @@ export const theme = createTheme({
             styleOverrides: {
                 root: {
                     borderRadius: '50px',
-                    lineHeight: '100%'
                 }
             }
         },
@@ -82,20 +82,20 @@ export const theme = createTheme({
                     backgroundColor: 'rgb(221,221,221)',
                     color: 'rgb(51,51,51)',
                     borderRadius: '25px',
-                    height: '25px',
-                    border: '1px solid transparent',
+                    paddingLeft: '5px',
+                    '.Mui-disabled': {
+                        cursor: 'not-allowed',
+                    },
                     '&:hover': {
                         cursor: 'pointer',
-                        backgroundColor: 'rgba(63,63,63,0.5)',
+                        backgroundColor: 'rgba(145,53,180,0.9)',
                         color: 'white'
-                    },
-                    '&:active': {
-                        border: '1px solid black'
                     },
                 },
                 label: {
-                    marginRight: '15px',
-                    fontSize: '0.8125rem'
+                    fontSize: '0.8125rem',
+                    padding: '5px 7.5px 5px 2.5px',
+                    borderRadius: '25px',
                 }
             }
         },
@@ -104,10 +104,26 @@ export const theme = createTheme({
                 root: {
                     textTransform: 'uppercase',
                     fontWeight: '500',
-                    backgroundColor: 'rgb(200,200,200)',
+                    backgroundColor: 'rgb(190,190,190)',
                     margin: '1rem',
-                    border: '1px solid black'
+                    border: '2px solid rgb(150,150,150)',
+                    color: 'white',
                 }
+            }
+        },
+        MuiRadio: {
+            styleOverrides: {
+                root: {
+                    padding: '0'
+                }
+            }
+        },
+        MuiCheckbox: {
+            styleOverrides: {
+                root: {
+                    padding: '0',
+                },
+
             }
         }
     }

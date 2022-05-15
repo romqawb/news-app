@@ -1,25 +1,68 @@
 import React, { useState } from 'react';
-import { Backdrop, Paper, Typography, FormControl, Chip, FormGroup, RadioGroup, Radio, Checkbox, FormControlLabel, Box, Button } from '@mui/material'
+import { Backdrop, Paper, Typography, FormControl, Chip, FormGroup, RadioGroup, Radio, FormControlLabel, Box, Button, Checkbox } from '@mui/material'
 
 const Filter = (props) => {
-    const { open, setOpen } = props;
-    const [searchIn, setSearchIn] = useState('everything');
+    const { open, setOpen, setSearchParams } = props;
     const [sortBy, setSortBy] = useState('publishedAt');
+    const [searchIn, setSearchIn] = useState('everything');
     const [filterReset, setFilterReset] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedLanguages, setSelectedLanguages] = useState([]);
-    const allCategories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'];
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedLanguage, setSelectedLanguage] = useState('all');
+    const allCategories = ['all', 'business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'];
+    const langs = {
+        all: 'All',
+        en: 'English',
+        fr: 'French',
+        es: 'Spanish',
+        de: 'German',
+        ru: 'Russian'
+    }
+
+    const buildQuery = () => {
+        const baseUrl = 'https://newsapi.org/v2';
+        let lookIn = '/everything?';
+        let sort = '';
+        let language = '';
+        let category = '';
+        let query = '';
+
+        if (searchIn !== 'everything') {
+            lookIn = '/top-headlines?';
+            if (selectedCategory !== 'all') {
+                category = `category=${selectedCategory}`;
+            }
+        } else {
+            category = '';
+        }
+
+        if (sortBy !== 'publishedAt') {
+            category === '' ? sort = `sortBy=${sortBy}` : sort = `&sortBy=${sortBy}`;
+        }
+
+        if (selectedLanguage !== 'all') {
+            sortBy === '' ? language = `language=${selectedLanguage}` : language = `&language=${selectedLanguage}`;
+        }
+
+        if (sort === '' && language === '' && category === '') {
+            query = 'q='
+        } else {
+            query = '&q='
+        }
+
+        return `${baseUrl}${lookIn}${category}${sort}${language}${query}`;
+    }
+
 
     const handleCategoryChange = (e) => {
-        !selectedCategories.includes(e.target.value) ?
-            setSelectedCategories([...selectedCategories, e.target.value]) :
-            setSelectedCategories(selectedCategories.filter(category => category !== e.target.value))
+        setSelectedCategory(e.target.value);
+    }
+
+    const handleSearchIn = (e) => {
+        setSearchIn(e.target.value);
     }
 
     const handleLanguageChange = (e) => {
-        !selectedLanguages.includes(e.target.value) ?
-            setSelectedLanguages([...selectedLanguages, e.target.value]) :
-            setSelectedLanguages(selectedLanguages.filter(language => language !== e.target.value))
+        setSelectedLanguage(e.target.value);
     }
 
     const closeFilter = () => {
@@ -28,10 +71,6 @@ const Filter = (props) => {
 
     const handleFilterAreaClick = (e) => {
         e.stopPropagation();
-    }
-
-    const handleSearchInChange = (e) => {
-        setSearchIn(e.target.value);
     }
 
     const handleSortByChange = (e) => {
@@ -44,22 +83,27 @@ const Filter = (props) => {
 
     const handleFilterChange = (e) => {
         if (filterReset) {
-            setSearchIn('everything');
             setSortBy('publishedAt');
-            setSelectedCategories([]);
-            setSelectedLanguages([]);
+            setSelectedCategory('all');
+            setSelectedLanguage('all');
+            setSearchIn('everything');
             setFilterReset(!filterReset);
+            setSearchParams('https://newsapi.org/v2/everything?q=');
+        } else {
+            console.log(buildQuery());
+            setSearchParams(buildQuery());
         }
         setOpen(false);
     }
 
-    const categories = (
-        allCategories.map((category, index) => {
-            return (
-                <FormControlLabel key={index} sx={{ m: 0.5 }} control={<Checkbox checked={selectedCategories.includes(category)} value={category} onChange={handleCategoryChange} label={category} color='secondary' />} label={category} />
-            )
-        })
-    )
+    const categories = allCategories.map((category, index) => {
+        return <FormControlLabel key={index} sx={{ m: 0.5 }} control={<Radio disabled={searchIn === 'everything'} checked={selectedCategory === category} value={category} onChange={handleCategoryChange} label={category} color='secondary' />} label={category} />
+
+    })
+
+    const languages = Object.keys(langs).map((lang, index) => {
+        return <FormControlLabel key={index} sx={{ m: 0.5 }} control={<Radio checked={selectedLanguage === lang} onChange={handleLanguageChange} value={lang} label={langs[lang]} color='secondary' />} label={langs[lang]} />
+    })
 
     return (
         <Backdrop
@@ -70,21 +114,21 @@ const Filter = (props) => {
             <Paper sx={{ p: 4, backgroundColor: 'rgba(255,255,255,0.95)', maxWidth: 'sm' }} onClick={handleFilterAreaClick} >
                 <Typography sx={{ textAlign: 'center', mb: 1, textTransform: 'uppercase' }} variant='h5'>Filter Preferences</Typography>
                 <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Categories' />
-                    <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
-                        {categories}
-                    </FormGroup>
-                </FormControl>
-                <FormControl sx={{ width: '100%' }}>
                     <Chip sx={{ width: '25%', m: '0 auto' }} label='Search In'></Chip>
                     <RadioGroup
                         sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}
                         name='searchIn'
                         value={searchIn}
-                        onChange={handleSearchInChange}>
-                        <FormControlLabel sx={{ m: 0.5 }} value='everything' control={<Radio variant='styledRadio' color='secondary' checked={searchIn === 'everything'} />} label='Everywhere' />
+                        onChange={handleSearchIn}>
+                        <FormControlLabel checked={searchIn === 'everything'} sx={{ m: 0.5 }} value='everything' control={<Radio color='secondary' />} label='Everywhere' />
                         <FormControlLabel sx={{ m: 0.5 }} value='top-headlines' control={<Radio color='secondary' checked={searchIn === 'top-headlines'} />} label='Top Headlines' />
                     </RadioGroup>
+                </FormControl>
+                <FormControl sx={{ width: '100%' }}>
+                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Categories' />
+                    <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
+                        {categories}
+                    </FormGroup>
                 </FormControl>
                 <FormControl sx={{ width: '100%' }}>
                     <Chip sx={{ width: '25%', m: '0 auto' }} label='Sort By'></Chip>
@@ -101,11 +145,7 @@ const Filter = (props) => {
                 <FormControl sx={{ width: '100%' }}>
                     <Chip sx={{ width: '25%', m: '0 auto' }} label='Languages'></Chip>
                     <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
-                        <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={selectedLanguages.includes('en')} onChange={handleLanguageChange} value={'en'} label={'English'} color='secondary' />} label={'English'} />
-                        <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={selectedLanguages.includes('fr')} onChange={handleLanguageChange} value={'fr'} label={'French'} color='secondary' />} label={'French'} />
-                        <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={selectedLanguages.includes('es')} onChange={handleLanguageChange} value={'es'} label={'Spanish'} color='secondary' />} label={'Spanish'} />
-                        <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={selectedLanguages.includes('de')} onChange={handleLanguageChange} value={'de'} label={'German'} color='secondary' />} label={'German'} />
-                        <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={selectedLanguages.includes('ru')} onChange={handleLanguageChange} value={'ru'} label={'Russian'} color='secondary' />} label={'Russian'} />
+                        {languages}
                     </FormGroup>
                 </FormControl>
                 <FormControl sx={{ width: '100%' }}>
@@ -120,7 +160,6 @@ const Filter = (props) => {
                 </Box>
             </Paper>
         </Backdrop>
-
     )
 }
 

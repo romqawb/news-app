@@ -1,99 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { v4 as uuid } from 'uuid';
 import AppHeader from './components/AppHeader';
-import Article from './components/Article';
-import { Skeleton, Grid, Container, Typography } from '@mui/material';
+import Error from './components/Error';
+import ArticleList from './components/ArticlesList';
+import { Container, Typography, Button, Box } from '@mui/material';
 import { theme } from './styles/Theme.js'
 import { ThemeProvider } from '@mui/material/styles';
-
-
 
 function App() {
   const [news, setNews] = useState(JSON.parse(window.localStorage.getItem('news') || '[]'));
   const [keyword, setKeyword] = useState(JSON.parse(window.localStorage.getItem('keyword') || JSON.stringify('random')));
-  const [query, updateQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-
-  let content;
+  const [error, setError] = useState(null);
+  const [articlesToShow, setArticlesToShow] = useState(18);
+  const [searchParams, setSearchParams] = useState('https://newsapi.org/v2/everything?q=');
   const params = {
     headers: {
       'X-Api-Key': process.env.REACT_APP_API_KEY
     }
   }
 
-  const getNews = async (queryParams) => {
-    const url = `https://newsapi.org/v2/everything?q=${queryParams}&language=en`;
-    console.log(url);
-    let foundNews = [];
-    await fetch(url, params)
-      .then(data => data.json())
-      .then(data => data.articles.map(article => foundNews.push(article)))
-      .catch(error => error)
-    setNews(foundNews);
-    setKeyword(queryParams);
-    setLoading(false);
-    updateQuery('');
-    window.localStorage.setItem('news', JSON.stringify(foundNews));
-    window.localStorage.setItem('keyword', JSON.stringify(queryParams));
+  const getNews = async (query, filterParams) => {
+    try {
+      setLoading(true);
+      const url = `${filterParams}${query}&pageSize=50`;
+      const res = await fetch(url, params);
+      const data = await res.json();
+      if (data.status === 'ok' && data.totalResults === 0) {
+        setError(`Nothing was found for ${query}. Try amending the search... `);
+      } else if (data.status === 'ok') {
+        setNews(data.articles);
+        setKeyword(query);
+        setError(null);
+        setArticlesToShow(18);
+        window.localStorage.setItem('news', JSON.stringify(data.articles));
+        window.localStorage.setItem('keyword', JSON.stringify(query));
+      } else {
+        setError('something went wrong');
+      }
+    } catch (err) {
+      setError(err);
+    }
   }
 
-  if (loading) {
-    const fakeNews = Array(4).fill('');
-    const fakeArticle = {
-      author: <Skeleton height={50} width={'100%'} animation='wave' />,
-      title: <Skeleton height={50} animation='wave' />,
-      description: <Skeleton height={150} animation='wave' />,
-      url: '',
-      urlToImage: 'https://miro.medium.com/max/1080/0*DqHGYPBA-ANwsma2.gif',
-      fake: true
-    }
-    content = (
-      fakeNews.map(item => {
-        return (
-          <Grid key={uuid()} item lg={4} md={6} sm={12} >
-            <Article article={fakeArticle} />
-          </Grid>
-        )
-      })
-    )
-  } else {
-    content = (
-      news.map((article) => {
-        return (
-          <Grid key={uuid()} item lg={4} md={6} sm={12}>
-            <Article article={article} />
-          </Grid>)
-      })
-    )
-  }
+  const loadMore = () => setArticlesToShow(prevState => prevState + 6);
 
   useEffect(() => {
     setTimeout(() => {
       if (news.length > 0) {
         setLoading(false);
-      } else {
-        getNews('random')
+      } else if (!error) {
+        getNews('random', 'https://newsapi.org/v2/everything?q=')
       }
-    }, 2000)
-  }, [loading, news])
+    }, 1500)
+  }, [news])
 
   return (
     <ThemeProvider theme={theme}>
       <Container sx={{ p: 3 }}>
         <AppHeader
-          updateQuery={updateQuery}
           getNews={getNews}
-          query={query}
-          setCategories={setCategories}
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
         />
-        <Typography variant='h3' sx={{ my: 2, p: 1, textAlign: 'center' }}>
-          {`All news found for keyword '${keyword}'`}
+        <Typography variant='h4' sx={{ my: 2, p: 1, textAlign: 'center' }}>
+          {error ? <Error error={error} /> : `All news found for keyword '${keyword}'`}
         </Typography>
-        <Grid container spacing={5}>
-          {content}
-        </Grid>
+        {!error &&
+          <ArticleList
+            news={news}
+            loading={loading}
+            articlesToShow={articlesToShow}
+          />}
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', m: 3 }}>
+          <Button disabled={news.length <= articlesToShow ? true : false} sx={{ width: '200px' }} size='small' variant='contained' color='secondary' onClick={loadMore}>Load more</Button>
+        </Box>
       </Container>
     </ThemeProvider>
   );

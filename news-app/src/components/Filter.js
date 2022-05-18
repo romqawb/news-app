@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Backdrop, Paper, Typography, FormControl, Chip, FormGroup, RadioGroup, Radio, FormControlLabel, Box, Button, Checkbox } from '@mui/material'
-
+import useStyles from '../styles/FilterStyles';
 const Filter = (props) => {
     const { open, setOpen, setSearchParams } = props;
     const [sortBy, setSortBy] = useState('publishedAt');
@@ -17,6 +17,7 @@ const Filter = (props) => {
         de: 'German',
         ru: 'Russian'
     }
+    const classes = useStyles();
 
     const buildQuery = () => {
         const baseUrl = 'https://newsapi.org/v2';
@@ -40,7 +41,7 @@ const Filter = (props) => {
         }
 
         if (selectedLanguage !== 'all') {
-            sortBy === '' ? language = `language=${selectedLanguage}` : language = `&language=${selectedLanguage}`;
+            sortBy === 'publishedAt' ? language = `language=${selectedLanguage}` : language = `&language=${selectedLanguage}`;
         }
 
         if (sort === '' && language === '' && category === '') {
@@ -48,7 +49,6 @@ const Filter = (props) => {
         } else {
             query = '&q='
         }
-
         return `${baseUrl}${lookIn}${category}${sort}${language}${query}`;
     }
 
@@ -90,7 +90,6 @@ const Filter = (props) => {
             setFilterReset(!filterReset);
             setSearchParams('https://newsapi.org/v2/everything?q=');
         } else {
-            console.log(buildQuery());
             setSearchParams(buildQuery());
         }
         setOpen(false);
@@ -111,10 +110,13 @@ const Filter = (props) => {
             open={open}
             onClick={closeFilter}
         >
-            <Paper sx={{ p: 4, backgroundColor: 'rgba(255,255,255,0.95)', maxWidth: 'sm' }} onClick={handleFilterAreaClick} >
-                <Typography sx={{ textAlign: 'center', mb: 1, textTransform: 'uppercase' }} variant='h5'>Filter Preferences</Typography>
-                <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Search In'></Chip>
+            <Paper
+                className={classes.filter}
+                sx={{ maxWidth: 'sm' }}
+                onClick={handleFilterAreaClick} >
+                <Typography className={classes.filterHeader} variant='h5'>Filter Preferences</Typography>
+                <FormControl className={classes.filterForm}>
+                    <Chip label='Search In'></Chip>
                     <RadioGroup
                         sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}
                         name='searchIn'
@@ -124,14 +126,14 @@ const Filter = (props) => {
                         <FormControlLabel sx={{ m: 0.5 }} value='top-headlines' control={<Radio color='secondary' checked={searchIn === 'top-headlines'} />} label='Top Headlines' />
                     </RadioGroup>
                 </FormControl>
-                <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Categories' />
-                    <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
+                <FormControl className={classes.filterForm}>
+                    <Chip label='Categories' />
+                    <FormGroup sx={{ m: 2, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                         {categories}
                     </FormGroup>
                 </FormControl>
-                <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Sort By'></Chip>
+                <FormControl className={classes.filterForm}>
+                    <Chip label='Sort By'></Chip>
                     <RadioGroup
                         sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}
                         name='sortBy'
@@ -142,14 +144,14 @@ const Filter = (props) => {
                         <FormControlLabel sx={{ m: 0.5 }} value='relevancy' control={<Radio color='secondary' checked={sortBy === 'relevancy'} />} label='Relevancy' />
                     </RadioGroup>
                 </FormControl>
-                <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Languages'></Chip>
+                <FormControl className={classes.filterForm}>
+                    <Chip label='Languages'></Chip>
                     <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
                         {languages}
                     </FormGroup>
                 </FormControl>
-                <FormControl sx={{ width: '100%' }}>
-                    <Chip sx={{ width: '25%', m: '0 auto' }} label='Reset'></Chip>
+                <FormControl className={classes.filterForm}>
+                    <Chip label='Reset'></Chip>
                     <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', m: 2 }}>
                         <FormControlLabel sx={{ m: 0.5 }} control={<Checkbox checked={filterReset} onChange={handleFilterReset} label={'Reset filter'} color='secondary' />} label={'Reset filters'} />
                     </FormGroup>

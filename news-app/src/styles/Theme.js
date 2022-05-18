@@ -24,7 +24,7 @@ export const theme = createTheme({
         MuiCard: {
             styleOverrides: {
                 root: {
-                    backgroundColor: 'rgba(63,66,68,0.9)',
+                    backgroundColor: 'rgba(73,76,78,1)',
                     borderRadius: 10
                 },
             }
@@ -94,7 +94,7 @@ export const theme = createTheme({
                 },
                 label: {
                     fontSize: '0.8125rem',
-                    padding: '5px 7.5px 5px 2.5px',
+                    padding: '5px 10px 5px 2.5px',
                     borderRadius: '25px',
                 }
             }
@@ -105,9 +105,13 @@ export const theme = createTheme({
                     textTransform: 'uppercase',
                     fontWeight: '500',
                     backgroundColor: 'rgb(190,190,190)',
-                    margin: '1rem',
+                    margin: '0rem auto',
                     border: '2px solid rgb(150,150,150)',
-                    color: 'white',
+                    color: 'black',
+                    width: '30%',
+                    padding: '15px',
+
+
                 }
             }
         },

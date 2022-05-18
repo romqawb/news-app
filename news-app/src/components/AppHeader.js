@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AppBar, Toolbar, Box, InputBase, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
@@ -31,7 +31,7 @@ const AppHeader = (props) => {
     }
 
     return (
-        <AppBar position='static' sx={{ py: 3 }}>
+        <AppBar id="back-to-top-anchor" position='static' sx={{ py: 3 }}>
             <Toolbar sx={{ justifyContent: { xs: 'space-between' } }}>
                 <Box noWrap sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
                     <img src='/NewsAppLogo.png' alt='logo' className={classes.logo} />

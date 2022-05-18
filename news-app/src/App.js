@@ -40,6 +40,8 @@ function App() {
       }
     } catch (err) {
       setError(err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -52,8 +54,15 @@ function App() {
       } else if (!error) {
         getNews('random', 'https://newsapi.org/v2/everything?q=')
       }
-    }, 1500)
+    }, 1000)
   }, [news])
+
+  useEffect(() => {
+    setTimeout(() => {
+      getNews(keyword, searchParams);
+    }, 500)
+  }, [searchParams]);
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -63,7 +72,7 @@ function App() {
           searchParams={searchParams}
           setSearchParams={setSearchParams}
         />
-        <Typography variant='h4' sx={{ my: 2, p: 1, textAlign: 'center' }}>
+        <Typography variant='h4' sx={{ my: 2, p: 1, textAlign: 'center', color: 'white' }}>
           {error ? <Error error={error} /> : `All news found for keyword '${keyword}'`}
         </Typography>
         {!error &&

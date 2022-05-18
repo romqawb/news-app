@@ -17,7 +17,7 @@ const Article = (props) => {
     const { article, fake } = props;
     const { author, title, description, url, urlToImage } = article;
     return (
-        <Grid key={uuid()} item lg={4} md={6} sm={12}>
+        <Grid key={uuid()} item lg={4} md={6} xs={12}>
             <Card className={classes.card}>
                 <CardMedia
                     sx={{ m: '2%', width: '96%', borderRadius: 2 }}

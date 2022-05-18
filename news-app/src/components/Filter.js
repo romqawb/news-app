@@ -41,7 +41,11 @@ const Filter = (props) => {
         }
 
         if (selectedLanguage !== 'all') {
-            sortBy === 'publishedAt' ? language = `language=${selectedLanguage}` : language = `&language=${selectedLanguage}`;
+            if (sortBy !== 'publishedAt' || category !== '') {
+                language = `&language=${selectedLanguage}`;
+            } else {
+                language = `language=${selectedLanguage}`;
+            }
         }
 
         if (sort === '' && language === '' && category === '') {

@@ -36,7 +36,7 @@ export const theme = createTheme({
                     borderRadius: '50px',
                     padding: '8px',
                     transition: 'all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                    width: '200px',
+                    // width: '200px',
                     'input': {
                         paddingLeft: '10px',
                         '&::placeholder': {
@@ -47,7 +47,7 @@ export const theme = createTheme({
                         borderColor: 'transparent',
                         color: 'rgba(0,0,0,0.8)',
                         backgroundColor: 'rgba(255,255,255,0.6)',
-                        width: '260px',
+                        width: '265px',
                         'input': {
                             '&::placeholder': {
                                 color: 'rgba(0,0,0,0.8)',

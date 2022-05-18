@@ -33,12 +33,12 @@ const AppHeader = (props) => {
     return (
         <AppBar id="back-to-top-anchor" position='static' sx={{ py: 3 }}>
             <Toolbar sx={{ justifyContent: { xs: 'space-between' } }}>
-                <Box noWrap sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
+                <Box noWrap sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                     <img src='/NewsAppLogo.png' alt='logo' className={classes.logo} />
                 </Box>
                 <Box component='div'>
                     <form onSubmit={handleClick}>
-                        <InputBase sx={{ width: { xs: '260px', sm: '200px' } }} placeholder='Search' variant='outlined' value={query} onChange={handleChange} />
+                        <InputBase sx={{ width: { xs: '265px', md: '200px' } }} placeholder='Search' variant='outlined' value={query} onChange={handleChange} />
                         <Button className={classes.settings} disabled={!searchActive} sx={{ mx: 1 }} variant='contained' color='warning' onClick={handleClick}>
                             <SearchIcon sx={{ fontSize: '1.25rem' }} />
                         </Button>
